@@ -1,29 +1,53 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useHealth } from '../contexts/HealthContext';
 import { Save, RefreshCw, Activity, Scale, HeartPulse } from 'lucide-react';
 
 const HealthUpdateForm: React.FC = () => {
   const { profile, metrics, updateProfile, updateMetric, recalculateBMI } = useHealth();
   
-  // Biometrics
-  const [weight, setWeight] = useState(77.8);
-  const [height] = useState(173.8); // Fixed height
+  // Helper to safely get metric values
+  const getMetricVal = (label: string, defaultVal: number | string) => {
+    const m = metrics.find(m => m.label === label);
+    return m ? m.value : defaultVal;
+  };
+
+  // Helper to parse BP
+  const getInitialBP = () => {
+    const bpStr = getMetricVal('Blood Pressure', '114/62') as string;
+    if (bpStr && bpStr.includes('/')) {
+      const parts = bpStr.split('/');
+      return { sys: Number(parts[0]), dia: Number(parts[1]) };
+    }
+    return { sys: 114, dia: 62 };
+  };
+
+  // State Initialization - Pulling strictly from Context (profile/metrics)
+  // Using profile.weight/height ensures we get the *updated* values, not hardcoded constants.
+  const [weight, setWeight] = useState(profile.weight); 
+  const [height] = useState(profile.height); 
   const [waist, setWaist] = useState(profile.waist);
   
-  // Blood & Vitals
-  const [glucose, setGlucose] = useState(metrics.find(m => m.label === 'Fasting Glucose')?.value || 77);
-  const [liverALT, setLiverALT] = useState(metrics.find(m => m.label === 'Liver (ALT)')?.value || 39);
+  const [glucose, setGlucose] = useState(Number(getMetricVal('Fasting Glucose', 77)));
+  const [liverALT, setLiverALT] = useState(Number(getMetricVal('Liver (ALT)', 39)));
   
-  // New Fields
-  const [bpSystolic, setBpSystolic] = useState(114);
-  const [bpDiastolic, setBpDiastolic] = useState(62);
-  const [ldl, setLdl] = useState(130); // Default placeholder if N/A
+  const initialBP = getInitialBP();
+  const [bpSystolic, setBpSystolic] = useState(initialBP.sys);
+  const [bpDiastolic, setBpDiastolic] = useState(initialBP.dia);
+  
+  const [ldl, setLdl] = useState(Number(getMetricVal('LDL Cholesterol', 130))); 
+  // Triglycerides isn't in default metrics yet, so we handle it gracefully or init default
   const [triglycerides, setTriglycerides] = useState(150);
 
   const [isSaved, setIsSaved] = useState(false);
 
+  // Sync state if context changes externally (optional, but good for consistency)
+  useEffect(() => {
+    setWeight(profile.weight);
+    setWaist(profile.waist);
+  }, [profile.weight, profile.waist]);
+
   const handleSave = () => {
-    // 1. Update Profile Biometrics
+    // 1. Update Profile Biometrics (Recalculate BMI and save Weight/Height)
     recalculateBMI(height, weight);
     updateProfile({ waist: Number(waist) });
     
@@ -33,7 +57,6 @@ const HealthUpdateForm: React.FC = () => {
     updateMetric('Liver (ALT)', liverALT);
     updateMetric('Blood Pressure', `${bpSystolic}/${bpDiastolic}`);
     updateMetric('LDL Cholesterol', ldl);
-    // (Optional) Add logic to add new metrics dynamically if they didn't exist
     
     // Show feedback
     setIsSaved(true);
