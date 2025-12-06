@@ -1,14 +1,42 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { UserProfile, HealthMetric, DiseaseRisk, DailyRoutineItem, HealthContextType } from '../types';
 import { USER_PROFILE, KEY_METRICS, RISKS, ROUTINE_PLAN } from '../constants';
 
 const HealthContext = createContext<HealthContextType | undefined>(undefined);
+const STORAGE_KEY = 'health_arch_data_v1';
 
 export const HealthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [profile, setProfile] = useState<UserProfile>(USER_PROFILE);
-  const [metrics, setMetrics] = useState<HealthMetric[]>(KEY_METRICS);
-  const [risks, setRisks] = useState<DiseaseRisk[]>(RISKS);
-  const [routine, setRoutine] = useState<DailyRoutineItem[]>(ROUTINE_PLAN);
+  // Initialize state from localStorage if available, otherwise use constants
+  const [profile, setProfile] = useState<UserProfile>(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    return saved ? JSON.parse(saved).profile : USER_PROFILE;
+  });
+
+  const [metrics, setMetrics] = useState<HealthMetric[]>(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    return saved ? JSON.parse(saved).metrics : KEY_METRICS;
+  });
+
+  const [risks, setRisks] = useState<DiseaseRisk[]>(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    return saved ? JSON.parse(saved).risks : RISKS;
+  });
+
+  const [routine, setRoutine] = useState<DailyRoutineItem[]>(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    return saved ? JSON.parse(saved).routine : ROUTINE_PLAN;
+  });
+
+  // Save to localStorage whenever data changes
+  useEffect(() => {
+    const dataToSave = {
+      profile,
+      metrics,
+      risks,
+      routine
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
+  }, [profile, metrics, risks, routine]);
 
   const updateProfile = (newProfile: Partial<UserProfile>) => {
     setProfile(prev => ({ ...prev, ...newProfile }));
@@ -53,6 +81,14 @@ export const HealthProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     updateMetric('BMI', bmi);
   };
 
+  const resetData = () => {
+    localStorage.removeItem(STORAGE_KEY);
+    setProfile(USER_PROFILE);
+    setMetrics(KEY_METRICS);
+    setRisks(RISKS);
+    setRoutine(ROUTINE_PLAN);
+  };
+
   return (
     <HealthContext.Provider value={{ 
       profile, 
@@ -61,7 +97,8 @@ export const HealthProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       routine, 
       updateProfile, 
       updateMetric,
-      recalculateBMI
+      recalculateBMI,
+      resetData
     }}>
       {children}
     </HealthContext.Provider>
