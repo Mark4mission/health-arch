@@ -6,6 +6,8 @@ export const USER_PROFILE = {
   age: 50,
   gender: "Male",
   job: "Airline Employee (Office)",
+  height: 173.8, // Added
+  weight: 77.8,  // Added
   bmi: 25.8, // 173.8cm, 77.8kg
   waist: 87.0,
   history: "Plantar Fasciitis, Gastritis, Benign Gastric Ulcer",
