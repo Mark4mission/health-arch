@@ -3,6 +3,8 @@ export interface UserProfile {
   age: number;
   gender: string;
   job: string;
+  height: number; // Added
+  weight: number; // Added
   bmi: number;
   waist: number;
   history: string;
