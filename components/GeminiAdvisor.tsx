@@ -56,7 +56,7 @@ const GeminiAdvisor: React.FC = () => {
       History: Plantar Fasciitis, Gastritis, Benign Gastric Ulcer.
       Constraints: No running (foot pain). 1am sleep.
       
-      User Query (Korean): ${input}
+      User Query (Korean): ${userMsg.text}
       
       Please answer in Korean using Markdown formatting (bold, lists).
     `;
@@ -72,6 +72,17 @@ const GeminiAdvisor: React.FC = () => {
 
     setMessages(prev => [...prev, botMsg]);
     setIsLoading(false);
+  };
+
+  // IME Composition handler to prevent duplicate submission in Korean
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      // isComposing is true when the user is currently typing a CJK character.
+      // We should assume the event is handled by the IME and not trigger send.
+      if (e.nativeEvent.isComposing) return;
+      e.preventDefault();
+      handleSend();
+    }
   };
 
   return (
@@ -141,7 +152,7 @@ const GeminiAdvisor: React.FC = () => {
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+            onKeyDown={handleKeyDown}
             placeholder="식단, 운동법, 검사 결과에 대해 물어보세요..."
             className="flex-1 border border-slate-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white text-slate-900"
           />
