@@ -62,4 +62,5 @@ export interface HealthContextType {
   updateProfile: (newProfile: Partial<UserProfile>) => void;
   updateMetric: (label: string, newValue: string | number) => void;
   recalculateBMI: (heightCm: number, weightKg: number) => void;
+  resetData: () => void;
 }
