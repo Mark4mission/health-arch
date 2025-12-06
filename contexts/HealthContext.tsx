@@ -48,7 +48,8 @@ export const HealthProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const recalculateBMI = (heightCm: number, weightKg: number) => {
     const heightM = heightCm / 100;
     const bmi = parseFloat((weightKg / (heightM * heightM)).toFixed(1));
-    updateProfile({ bmi });
+    // Important: Update weight and height in profile as well as BMI
+    updateProfile({ bmi, weight: weightKg, height: heightCm });
     updateMetric('BMI', bmi);
   };
 
