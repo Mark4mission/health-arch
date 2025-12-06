@@ -1,0 +1,5 @@
+{
+  "name": "HealthArchitect",
+  "description": "A personalized health management dashboard analyzing medical reports and lifestyle constraints for a 50-year-old office worker.",
+  "requestFramePermissions": []
+}
