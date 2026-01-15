@@ -5,7 +5,8 @@ import LifestylePlan from './components/LifestylePlan';
 import GeminiAdvisor from './components/GeminiAdvisor';
 import MedicalReport from './components/MedicalReport';
 import HealthUpdateForm from './components/HealthUpdateForm';
-import { LayoutDashboard, ClipboardList, Stethoscope, MessageSquareText, Menu, X, Settings2 } from 'lucide-react';
+import MedicalRecords from './components/MedicalRecords';
+import { LayoutDashboard, ClipboardList, Stethoscope, MessageSquareText, Menu, X, Settings2, FileText } from 'lucide-react';
 import { HealthProvider, useHealth } from './contexts/HealthContext';
 
 const MainContent: React.FC = () => {
@@ -20,6 +21,7 @@ const MainContent: React.FC = () => {
       case TabOption.REPORT: return <MedicalReport />;
       case TabOption.ADVISOR: return <GeminiAdvisor />;
       case TabOption.UPDATE: return <HealthUpdateForm />;
+      case TabOption.MEDICAL_RECORDS: return <MedicalRecords />;
       default: return <Dashboard />;
     }
   };
@@ -86,6 +88,7 @@ const MainContent: React.FC = () => {
           <nav className="space-y-2">
             <NavItem tab={TabOption.DASHBOARD} label="대시보드 (Overview)" icon={LayoutDashboard} />
             <NavItem tab={TabOption.UPDATE} label="데이터 수정 (Update)" icon={Settings2} />
+            <NavItem tab={TabOption.MEDICAL_RECORDS} label="진료 기록 (Records)" icon={FileText} />
             <NavItem tab={TabOption.REPORT} label="의학 분석 (Report)" icon={Stethoscope} />
             <NavItem tab={TabOption.PLAN} label="실천 계획 (Plan)" icon={ClipboardList} />
             <NavItem tab={TabOption.ADVISOR} label="AI 상담 (Advisor)" icon={MessageSquareText} />
@@ -106,6 +109,7 @@ const MainContent: React.FC = () => {
             <h2 className="text-2xl md:text-3xl font-bold text-slate-800">
               {activeTab === TabOption.DASHBOARD && "건강 대시보드"}
               {activeTab === TabOption.UPDATE && "건강 지표 업데이트"}
+              {activeTab === TabOption.MEDICAL_RECORDS && "진료 및 처방 기록"}
               {activeTab === TabOption.PLAN && "맞춤형 실천 계획"}
               {activeTab === TabOption.REPORT && "상세 의료 분석 보고서"}
               {activeTab === TabOption.ADVISOR && "AI 닥터 상담"}
@@ -113,6 +117,7 @@ const MainContent: React.FC = () => {
             <p className="text-slate-500 mt-1">
               {activeTab === TabOption.DASHBOARD && "최근 검진 결과를 바탕으로 한 건강 상태 요약입니다."}
               {activeTab === TabOption.UPDATE && "새로운 측정값을 입력하여 프로필을 최신 상태로 유지하세요."}
+              {activeTab === TabOption.MEDICAL_RECORDS && "병원, 의원, 약국 방문 기록을 관리하세요."}
               {activeTab === TabOption.PLAN && "바쁜 일상 속에서 실천 가능한 구체적인 행동 가이드입니다."}
               {activeTab === TabOption.REPORT && "질환 위험도와 검사 결과에 대한 심층 분석입니다."}
               {activeTab === TabOption.ADVISOR && "나의 건강 데이터를 알고 있는 AI와 상담해보세요."}

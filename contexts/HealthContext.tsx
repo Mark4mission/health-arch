@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import { UserProfile, HealthMetric, DiseaseRisk, DailyRoutineItem, HealthContextType } from '../types';
+import { UserProfile, HealthMetric, DiseaseRisk, DailyRoutineItem, HealthContextType, MedicalVisit } from '../types';
 import { USER_PROFILE, KEY_METRICS, RISKS, ROUTINE_PLAN } from '../constants';
 
 const HealthContext = createContext<HealthContextType | undefined>(undefined);
@@ -27,16 +27,22 @@ export const HealthProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     return saved ? JSON.parse(saved).routine : ROUTINE_PLAN;
   });
 
+  const [medicalVisits, setMedicalVisits] = useState<MedicalVisit[]>(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    return saved ? (JSON.parse(saved).medicalVisits || []) : [];
+  });
+
   // Save to localStorage whenever data changes
   useEffect(() => {
     const dataToSave = {
       profile,
       metrics,
       risks,
-      routine
+      routine,
+      medicalVisits
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
-  }, [profile, metrics, risks, routine]);
+  }, [profile, metrics, risks, routine, medicalVisits]);
 
   const updateProfile = (newProfile: Partial<UserProfile>) => {
     setProfile(prev => ({ ...prev, ...newProfile }));
@@ -87,18 +93,41 @@ export const HealthProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     setMetrics(KEY_METRICS);
     setRisks(RISKS);
     setRoutine(ROUTINE_PLAN);
+    setMedicalVisits([]);
+  };
+
+  const addMedicalVisit = (visit: Omit<MedicalVisit, 'id'>) => {
+    const newVisit: MedicalVisit = {
+      ...visit,
+      id: Date.now().toString() + Math.random().toString(36).substr(2, 9)
+    };
+    setMedicalVisits(prev => [newVisit, ...prev]);
+  };
+
+  const updateMedicalVisit = (id: string, updates: Partial<MedicalVisit>) => {
+    setMedicalVisits(prev =>
+      prev.map(visit => visit.id === id ? { ...visit, ...updates } : visit)
+    );
+  };
+
+  const deleteMedicalVisit = (id: string) => {
+    setMedicalVisits(prev => prev.filter(visit => visit.id !== id));
   };
 
   return (
-    <HealthContext.Provider value={{ 
-      profile, 
-      metrics, 
-      risks, 
-      routine, 
-      updateProfile, 
+    <HealthContext.Provider value={{
+      profile,
+      metrics,
+      risks,
+      routine,
+      medicalVisits,
+      updateProfile,
       updateMetric,
       recalculateBMI,
-      resetData
+      resetData,
+      addMedicalVisit,
+      updateMedicalVisit,
+      deleteMedicalVisit
     }}>
       {children}
     </HealthContext.Provider>
