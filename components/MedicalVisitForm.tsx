@@ -20,7 +20,7 @@ const MedicalVisitForm: React.FC<MedicalVisitFormProps> = ({ visit, onClose }) =
     symptoms: visit?.symptoms || '',
     diagnosis: visit?.diagnosis || '',
     prescription: visit?.prescription || '',
-    cost: visit?.cost || 0,
+    cost: visit?.cost !== undefined ? visit.cost : '' as any,
     notes: visit?.notes || '',
   });
 
@@ -30,7 +30,7 @@ const MedicalVisitForm: React.FC<MedicalVisitFormProps> = ({ visit, onClose }) =
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: name === 'cost' ? Number(value) : value
+      [name]: name === 'cost' ? (value === '' ? '' : Number(value)) : value
     }));
   };
 
@@ -87,6 +87,7 @@ const MedicalVisitForm: React.FC<MedicalVisitFormProps> = ({ visit, onClose }) =
 
     const visitData = {
       ...formData,
+      cost: formData.cost === '' ? 0 : Number(formData.cost),
       documents
     };
 
@@ -248,7 +249,7 @@ const MedicalVisitForm: React.FC<MedicalVisitFormProps> = ({ visit, onClose }) =
               onChange={handleChange}
               required
               min="0"
-              placeholder="0"
+              placeholder="비용을 입력하세요"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
             />
           </div>

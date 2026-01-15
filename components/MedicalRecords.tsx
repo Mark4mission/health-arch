@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useHealth } from '../contexts/HealthContext';
 import { MedicalVisit } from '../types';
-import { FileText, Plus, Calendar, MapPin, DollarSign, Trash2, Edit, Download, ChevronDown, ChevronUp, Building2, Pill, Search, Printer, X } from 'lucide-react';
+import { FileText, Plus, Calendar, MapPin, Trash2, Edit, Download, ChevronDown, ChevronUp, Building2, Pill, Search, Printer, X } from 'lucide-react';
 import MedicalVisitForm from './MedicalVisitForm';
 
 const MedicalRecords: React.FC = () => {
@@ -307,10 +307,6 @@ const MedicalRecords: React.FC = () => {
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">진료 및 처방 기록</h1>
-            <p className="text-gray-600 mt-2">병원, 의원, 약국 방문 기록을 관리하세요</p>
-          </div>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setShowSearchPanel(!showSearchPanel)}
@@ -535,9 +531,8 @@ const MedicalRecords: React.FC = () => {
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-2 text-gray-700">
-                        <DollarSign className="w-4 h-4" />
-                        <span className="font-semibold">{visit.cost.toLocaleString()}원</span>
+                      <div className="flex items-center gap-1 text-gray-700">
+                        <span className="font-semibold">₩ {visit.cost.toLocaleString()}</span>
                       </div>
                     </div>
 
